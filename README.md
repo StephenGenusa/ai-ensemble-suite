@@ -6,7 +6,7 @@
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![Status](https://img.shields.io/badge/status-alpha-orange.svg)](https://github.com/StephenGenusa/ai-ensemble-suite)
 
-Python framework for multiple GGUF language models to collaborate on tasks using structured communication patterns, aggregating their outputs into coherent responses.
+Python framework for multiple GGUF language models to collaborate on tasks using structured communication patterns, aggregating their outputs into coherent responses. While I chose to support GGUF to begin with, I plan to add OpenAI compatible server support allowing local LLM server and Internet APIs to be called.
 
 ## Table of Contents
 
@@ -72,7 +72,7 @@ pip install -e ".[dev]"
 
 ## Quick Start
 
-You will want to determine which GGUF libraries 
+You will want to determine which GGUF models you wish to work with. Download them and place in the root folder of the project under a /models directory... or change the YAML to point to the location of your models.
 
 Here's a minimal example to get started with AI Ensemble Suite:
 
