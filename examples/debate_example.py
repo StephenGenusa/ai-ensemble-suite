@@ -22,16 +22,6 @@ models_dir = project_root / "models"
 # Configuration with structured_debate collaboration mode
 DEBATE_CONFIG = {
     "models": {
-        "mistral": {
-            "path": str(models_dir / "mistral-7b-instruct-v0.2.Q4_K_M.gguf"),
-            "role": "primary",
-            "parameters": {
-                "temperature": 0.7,
-                "top_p": 0.9,
-                "max_tokens": 1024,
-                "n_ctx": 8192  # Increased context window
-            }
-        },
         "deepseek": {
             "path": str(models_dir / "DeepSeek-R1-Distill-Llama-8B-Q6_K.gguf"),
             "role": "critic",
@@ -39,7 +29,21 @@ DEBATE_CONFIG = {
                 "temperature": 0.75,
                 "top_p": 0.9,
                 "max_tokens": 2048,
-                "n_ctx": 8192  # Increased context window
+                "n_ctx": 16384,  # Increased context window
+                "n_gpu_layers": -1
+
+            }
+        },
+        "mistral": {
+            "path": str(models_dir / "Mistral-7B-Instruct-v0.3-Q6_K.gguf"),
+            "role": "critic",
+            "parameters": {
+                "temperature": 0.75,
+                "top_p": 0.9,
+                "max_tokens": 4096,
+                "n_ctx": 16384,
+                "n_gpu_layers": -1
+
             }
         }
     },
@@ -64,7 +68,7 @@ DEBATE_CONFIG = {
                 "name": "defense",
                 "type": "structured_debate",
                 "subtype": "synthesis",
-                "models": ["mistral"],
+                "models": ["deepseek"],
                 "input_from": ["initial_response", "critique"],
                 "prompt_template": "debate_defense"
             },
@@ -196,12 +200,6 @@ async def main():
             # Get response with trace
             response_data = await ensemble.ask(query, trace=True)
 
-            # Print response
-            print("\nSynthesized Response:")
-            print("=" * 80)
-            print(response_data['response'])
-            print("=" * 80)
-
             def display_wrapped_text(text, width=60):
                 if not text or not text.strip():
                     print("[No meaningful content generated]")
@@ -224,6 +222,13 @@ async def main():
                             print()
 
                 print(f"\n[Response length: {len(text)} characters]")
+
+            # Print response
+            print("\nSynthesized Response:")
+            print("=" * 80)
+            print(display_wrapped_text(response_data['response']))
+            print("=" * 80)
+
 
             # In the main display section:
             if 'trace' in response_data and 'phases' in response_data['trace']:
