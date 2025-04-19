@@ -11,10 +11,11 @@ import psutil
 from concurrent.futures import ThreadPoolExecutor
 import math
 import threading
-from pathlib import Path # Added import
+from pathlib import Path  # Added import
 
 try:
     from llama_cpp import Llama, LlamaGrammar, LogitsProcessorList, LogitsProcessor
+
     LLAMA_CPP_AVAILABLE = True
 except ImportError:
     print("--------------------------------------------------------------------")
@@ -82,12 +83,12 @@ class GGUFModel:
     """Wrapper for llama-cpp-python GGUF models."""
 
     def __init__(
-        self,
-        model_id: str,
-        model_path: str,
-        model_config: Dict[str, Any],
-        config_manager: Optional["ConfigManager"] = None,
-        executor: Optional[ThreadPoolExecutor] = None
+            self,
+            model_id: str,
+            model_path: str,
+            model_config: Dict[str, Any],
+            config_manager: Optional["ConfigManager"] = None,
+            executor: Optional[ThreadPoolExecutor] = None
     ) -> None:
         if not LLAMA_CPP_AVAILABLE:
             raise ResourceError(
@@ -95,7 +96,7 @@ class GGUFModel:
                 " See warning message above for installation instructions."
             )
         self._model_id = model_id
-        self._model_path = str(model_path) # Ensure path is string
+        self._model_path = str(model_path)  # Ensure path is string
         self._model_config_original = model_config
         self._config_manager = config_manager
         self._executor = executor
@@ -107,25 +108,28 @@ class GGUFModel:
         # --- Parameter Merging ---
         model_params_specific = model_config.get("parameters", {})
         if not isinstance(model_params_specific, dict):
-             logger.warning(f"Model '{model_id}': 'parameters' section is not a dictionary. Ignoring.")
-             model_params_specific = {}
+            logger.warning(f"Model '{model_id}': 'parameters' section is not a dictionary. Ignoring.")
+            model_params_specific = {}
 
         model_params_defaults = {}
         if self._config_manager:
-             try:
-                 if hasattr(self._config_manager, 'get_default_model_parameters'):
-                     model_params_defaults = self._config_manager.get_default_model_parameters()
-                 elif hasattr(self._config_manager, 'get_model_defaults'): # Fallback check
-                     logger.warning(f"ConfigManager has 'get_model_defaults' not 'get_default_model_parameters'. Using it for defaults for {model_id}, but might indicate mismatch.")
-                     model_params_defaults = self._config_manager.get_model_defaults()
+            try:
+                if hasattr(self._config_manager, 'get_default_model_parameters'):
+                    model_params_defaults = self._config_manager.get_default_model_parameters()
+                elif hasattr(self._config_manager, 'get_model_defaults'):  # Fallback check
+                    logger.warning(
+                        f"ConfigManager has 'get_model_defaults' not 'get_default_model_parameters'. Using it for defaults for {model_id}, but might indicate mismatch.")
+                    model_params_defaults = self._config_manager.get_model_defaults()
 
-                 if not isinstance(model_params_defaults, dict):
-                      logger.warning(f"Default model parameters retrieved from ConfigManager for '{model_id}' is not a dict. Ignoring defaults.")
-                      model_params_defaults = {}
-             except AttributeError:
-                 logger.warning(f"ConfigManager instance passed to GGUFModel '{model_id}' does not implement expected defaults method. Skipping defaults.")
-             except Exception as e:
-                 logger.warning(f"Could not retrieve model defaults from ConfigManager for '{model_id}': {e}")
+                if not isinstance(model_params_defaults, dict):
+                    logger.warning(
+                        f"Default model parameters retrieved from ConfigManager for '{model_id}' is not a dict. Ignoring defaults.")
+                    model_params_defaults = {}
+            except AttributeError:
+                logger.warning(
+                    f"ConfigManager instance passed to GGUFModel '{model_id}' does not implement expected defaults method. Skipping defaults.")
+            except Exception as e:
+                logger.warning(f"Could not retrieve model defaults from ConfigManager for '{model_id}': {e}")
 
         self._parameters = {**model_params_defaults, **model_params_specific}
 
@@ -135,11 +139,10 @@ class GGUFModel:
             if not resolved_path_obj.exists():
                 logger.error(f"Model path does not exist: {resolved_path_obj}")
                 raise ModelError(f"Model path does not exist: {resolved_path_obj}")
-            self._model_path = str(resolved_path_obj) # Store the resolved absolute path
+            self._model_path = str(resolved_path_obj)  # Store the resolved absolute path
         except Exception as path_e:
-             logger.error(f"Error resolving or checking model path '{self._model_path}': {path_e}")
-             raise ModelError(f"Invalid model path '{self._model_path}': {path_e}") from path_e
-
+            logger.error(f"Error resolving or checking model path '{self._model_path}': {path_e}")
+            raise ModelError(f"Invalid model path '{self._model_path}': {path_e}") from path_e
 
         logger.info(f"Initialized GGUFModel '{self._model_id}' (Path: {os.path.basename(self._model_path)})",
                     extra={"role": self._role})
@@ -149,44 +152,79 @@ class GGUFModel:
         # Provides access to the instance's lock for external coordinated use if needed
         return self._inference_lock
 
+    def count_tokens(self, text: str) -> int:
+        """Count the number of tokens in the text using the model's tokenizer.
+
+        Args:
+            text: The text to tokenize and count
+
+        Returns:
+            Number of tokens in the text
+
+        Raises:
+            ModelError: If the model isn't loaded
+        """
+        if not self.is_loaded() or self._llm is None:
+            raise ModelError(f"Model {self._model_id} must be loaded to count tokens")
+
+        try:
+            # Use the model's tokenizer to get an accurate count
+            tokens = self._llm.tokenize(text.encode('utf-8'))
+            return len(tokens)
+        except Exception as e:
+            logger.warning(f"Error counting tokens with model tokenizer for {self._model_id}: {e}")
+            # Fallback estimate (rough approximation for English text)
+            words = len(text.split())
+            est_tokens = int(words * 1.3)  # ~1.3 tokens per word is a rough estimate
+            logger.warning(
+                f"Using fallback token estimation for {self._model_id}: ~{est_tokens} tokens (based on {words} words)")
+            return est_tokens
+
     def load(self) -> bool:
         """Loads the GGUF model using llama-cpp-python. Blocking call."""
         if self._llm is not None:
             logger.debug(f"Model {self._model_id} is already loaded.")
             return True
         if not os.path.exists(self._model_path):
-             logger.error(f"Model path disappeared before loading: {self._model_path}")
-             return False
+            logger.error(f"Model path disappeared before loading: {self._model_path}")
+            return False
 
         load_start_time = time.time()
-        thread_name = threading.current_thread().name # Get thread name for logging
+        thread_name = threading.current_thread().name  # Get thread name for logging
         logger.info(f"[{thread_name}] Loading model {self._model_id} from {self._model_path}")
         llama_params = self._get_llama_constructor_params()
         try:
-             logger.debug(f"[{thread_name}] Initializing llama_cpp.Llama for '{self._model_id}' with params: {llama_params}")
-             self._llm = Llama(
-                 model_path=str(self._model_path),
-                 **llama_params
-             )
-             logger.debug(f"[{thread_name}] llama_cpp.Llama constructor RETURNED SUCCESSFULLY for '{self._model_id}'")
+            logger.debug(
+                f"[{thread_name}] Initializing llama_cpp.Llama for '{self._model_id}' with params: {llama_params}")
+            self._llm = Llama(
+                model_path=str(self._model_path),
+                **llama_params
+            )
+            logger.debug(f"[{thread_name}] llama_cpp.Llama constructor RETURNED SUCCESSFULLY for '{self._model_id}'")
 
-             self._is_loaded = True
-             load_time = time.time() - load_start_time
-             logger.info(f"[{thread_name}] Successfully loaded model {self._model_id} in {load_time:.2f}s")
-             return True
+            self._is_loaded = True
+            load_time = time.time() - load_start_time
+            logger.info(f"[{thread_name}] Successfully loaded model {self._model_id} in {load_time:.2f}s")
+            return True
 
         except Exception as e:
-             logger.error(f"[{thread_name}] EXCEPTION during llama_cpp.Llama constructor for '{self._model_id}'")
-             self._llm = None
-             self._is_loaded = False
-             logger.error(f"[{thread_name}] Failed to load model {self._model_id} from {self._model_path}: {str(e)}", exc_info=True)
-             str_e = str(e).lower()
-             if "ggml_assert" in str_e: logger.error(f"[{thread_name}] Hint: GGML_ASSERT errors often indicate an issue with the model file itself (corruption) or incompatibility with the llama.cpp version.")
-             if "cublas" in str_e or "cuda" in str_e: logger.error(f"[{thread_name}] Hint: CUDA/cuBLAS related errors often point to driver issues or problems with the llama-cpp-python GPU build.")
-             if "blas" in str_e and "cublas" not in str_e: logger.error(f"[{thread_name}] Hint: BLAS errors might indicate issues with the CPU backend library (OpenBLAS, etc.).")
-             if "metal" in str_e: logger.error(f"[{thread_name}] Hint: Metal errors usually occur on macOS and might relate to GPU compatibility or build issues.")
-             if "path" in str_e: logger.error(f"[{thread_name}] Hint: Double-check the model path is correct and accessible: {self._model_path}")
-             return False
+            logger.error(f"[{thread_name}] EXCEPTION during llama_cpp.Llama constructor for '{self._model_id}'")
+            self._llm = None
+            self._is_loaded = False
+            logger.error(f"[{thread_name}] Failed to load model {self._model_id} from {self._model_path}: {str(e)}",
+                         exc_info=True)
+            str_e = str(e).lower()
+            if "ggml_assert" in str_e: logger.error(
+                f"[{thread_name}] Hint: GGML_ASSERT errors often indicate an issue with the model file itself (corruption) or incompatibility with the llama.cpp version.")
+            if "cublas" in str_e or "cuda" in str_e: logger.error(
+                f"[{thread_name}] Hint: CUDA/cuBLAS related errors often point to driver issues or problems with the llama-cpp-python GPU build.")
+            if "blas" in str_e and "cublas" not in str_e: logger.error(
+                f"[{thread_name}] Hint: BLAS errors might indicate issues with the CPU backend library (OpenBLAS, etc.).")
+            if "metal" in str_e: logger.error(
+                f"[{thread_name}] Hint: Metal errors usually occur on macOS and might relate to GPU compatibility or build issues.")
+            if "path" in str_e: logger.error(
+                f"[{thread_name}] Hint: Double-check the model path is correct and accessible: {self._model_path}")
+            return False
         # finally:
         #    logger.debug(f"[{thread_name}] Exiting load() method for {self._model_id}")
 
@@ -223,32 +261,38 @@ class GGUFModel:
 
                     original_value_repr = repr(value)
                     if param_type == bool and not isinstance(value, bool):
-                         if isinstance(value, str): value = value.lower() in ['true', '1', 't', 'y', 'yes', 'on']
-                         else: value = bool(value)
-                    elif param_type == int and not isinstance(value, int): value = int(float(value))
-                    elif param_type == float and not isinstance(value, float): value = float(value)
-                    elif param_type == str and not isinstance(value, str): value = str(value)
+                        if isinstance(value, str):
+                            value = value.lower() in ['true', '1', 't', 'y', 'yes', 'on']
+                        else:
+                            value = bool(value)
+                    elif param_type == int and not isinstance(value, int):
+                        value = int(float(value))
+                    elif param_type == float and not isinstance(value, float):
+                        value = float(value)
+                    elif param_type == str and not isinstance(value, str):
+                        value = str(value)
                     # Add list handling if needed (e.g., tensor_split)
 
                     constructor_params[param_key] = value
                 except (ValueError, TypeError) as e:
-                     logger.warning(f"Could not convert param '{param_key}' (value: {original_value_repr}) for Llama constructor for '{self._model_id}': {e}. Skipping parameter.")
+                    logger.warning(
+                        f"Could not convert param '{param_key}' (value: {original_value_repr}) for Llama constructor for '{self._model_id}': {e}. Skipping parameter.")
 
         # Sensible Defaults & Overrides
         if constructor_params.get("verbose") is not True:
             constructor_params["verbose"] = False
 
-        constructor_params["logits_all"] = True # Required for logprobs
+        constructor_params["logits_all"] = True  # Required for logprobs
 
         if "n_ctx" not in constructor_params:
-             constructor_params["n_ctx"] = 4096
-             logger.debug(f"Using default n_ctx={constructor_params['n_ctx']} for {self._model_id}")
+            constructor_params["n_ctx"] = 4096
+            logger.debug(f"Using default n_ctx={constructor_params['n_ctx']} for {self._model_id}")
 
         if "n_gpu_layers" not in constructor_params:
-             constructor_params["n_gpu_layers"] = 0
-             logger.debug(f"Using default n_gpu_layers={constructor_params['n_gpu_layers']} for {self._model_id}")
+            constructor_params["n_gpu_layers"] = 0
+            logger.debug(f"Using default n_gpu_layers={constructor_params['n_gpu_layers']} for {self._model_id}")
         else:
-             logger.debug(f"Using configured n_gpu_layers={constructor_params['n_gpu_layers']} for {self._model_id}")
+            logger.debug(f"Using configured n_gpu_layers={constructor_params['n_gpu_layers']} for {self._model_id}")
 
         # Keep n_batch config or default from ConfigManager if present
         if "n_batch" in constructor_params:
@@ -257,7 +301,6 @@ class GGUFModel:
         # If it's needed, it should come from the model defaults in the config.
         # else:
         #    logger.debug(f"n_batch not configured for {self._model_id}, llama-cpp will use its internal default.")
-
 
         return constructor_params
 
@@ -291,7 +334,8 @@ class GGUFModel:
                 logger.warning(f"Could not clear CUDA cache during unload of {self._model_id}: {cuda_e}")
 
             unload_duration = time.time() - unload_start_time
-            logger.info(f"Model {self._model_id} instance released in {unload_duration:.2f}s (Resource cleanup might take slightly longer).")
+            logger.info(
+                f"Model {self._model_id} instance released in {unload_duration:.2f}s (Resource cleanup might take slightly longer).")
         except Exception as e:
             logger.error(f"Error occurred during model {self._model_id} unload/cleanup: {str(e)}", exc_info=True)
 
@@ -300,9 +344,9 @@ class GGUFModel:
         return self._is_loaded and self._llm is not None
 
     def _prepare_generation_params(
-        self,
-        compute_confidence: bool = False,
-        **kwargs: Any
+            self,
+            compute_confidence: bool = False,
+            **kwargs: Any
     ) -> Dict[str, Any]:
         """Merges default, model-specific, and call-specific generation parameters."""
 
@@ -327,24 +371,26 @@ class GGUFModel:
         # --- Type checks and Post-processing ---
 
         if gen_params.get("max_tokens") is not None:
-             try:
-                  max_t = int(gen_params["max_tokens"])
-                  gen_params["max_tokens"] = max_t if max_t > 0 else None
-             except (ValueError, TypeError):
-                  logger.warning(f"'max_tokens' value {gen_params['max_tokens']} is invalid for {self._model_id}. Setting to None (unlimited).")
-                  gen_params["max_tokens"] = None
+            try:
+                max_t = int(gen_params["max_tokens"])
+                gen_params["max_tokens"] = max_t if max_t > 0 else None
+            except (ValueError, TypeError):
+                logger.warning(
+                    f"'max_tokens' value {gen_params['max_tokens']} is invalid for {self._model_id}. Setting to None (unlimited).")
+                gen_params["max_tokens"] = None
 
         if "grammar" in gen_params and isinstance(gen_params["grammar"], str):
             grammar_str = gen_params["grammar"]
             if grammar_str:
-                 try:
-                     gen_params["grammar"] = LlamaGrammar.from_string(grammar_str)
-                     logger.debug(f"Successfully parsed grammar string for {self._model_id}.")
-                 except Exception as e:
-                     logger.error(f"Failed to parse grammar string for {self._model_id}: {e}. Removing grammar parameter.")
-                     gen_params.pop("grammar", None)
+                try:
+                    gen_params["grammar"] = LlamaGrammar.from_string(grammar_str)
+                    logger.debug(f"Successfully parsed grammar string for {self._model_id}.")
+                except Exception as e:
+                    logger.error(
+                        f"Failed to parse grammar string for {self._model_id}: {e}. Removing grammar parameter.")
+                    gen_params.pop("grammar", None)
             else:
-                 gen_params.pop("grammar", None)
+                gen_params.pop("grammar", None)
 
         # Automatically enable logprobs if confidence calculation is explicitly requested FOR THIS CALL
         if compute_confidence and gen_params.get('logprobs') is None:
@@ -354,20 +400,21 @@ class GGUFModel:
             logger.debug(f"Confidence requested for {self._model_id}, setting 'logprobs={logprob_val}'.")
             gen_params['logprobs'] = logprob_val
         elif gen_params.get('logprobs') is not None:
-             try:
-                 gen_params['logprobs'] = int(gen_params['logprobs'])
-                 if gen_params['logprobs'] <= 0: # Ensure it's positive if set
-                     logger.warning(f"'logprobs' value must be positive for {self._model_id}. Disabling logprobs.")
-                     gen_params['logprobs'] = None
-             except (ValueError, TypeError):
-                 logger.warning(f"Invalid 'logprobs' value {gen_params['logprobs']} for {self._model_id}. Disabling logprobs.")
-                 gen_params['logprobs'] = None
-
+            try:
+                gen_params['logprobs'] = int(gen_params['logprobs'])
+                if gen_params['logprobs'] <= 0:  # Ensure it's positive if set
+                    logger.warning(f"'logprobs' value must be positive for {self._model_id}. Disabling logprobs.")
+                    gen_params['logprobs'] = None
+            except (ValueError, TypeError):
+                logger.warning(
+                    f"Invalid 'logprobs' value {gen_params['logprobs']} for {self._model_id}. Disabling logprobs.")
+                gen_params['logprobs'] = None
 
         # 'stream' is handled differently; remove if present
         if 'stream' in gen_params:
-           logger.debug(f"Removing 'stream' parameter for {self._model_id} as it's not supported by this async generate method's usage.")
-           del gen_params['stream']
+            logger.debug(
+                f"Removing 'stream' parameter for {self._model_id} as it's not supported by this async generate method's usage.")
+            del gen_params['stream']
 
         logger.debug(f"Prepared final generation params for {self._model_id}: {gen_params}")
         return gen_params
@@ -406,8 +453,62 @@ class GGUFModel:
         thread_name = threading.current_thread().name
         # Include role in log message
         model_id_with_role = f"{self._model_id} ({self._role})" if self._role else self._model_id
-        logger.debug(
-            f"[{thread_name}] Starting generation task for model {model_id_with_role}. Prompt length: {len(formatted_prompt)}")
+
+        # Get context window size
+        context_window = self.get_context_window()
+
+        # Count tokens and log prompt metrics
+        token_count = 0
+        try:
+            if self._llm and hasattr(self._llm, 'tokenize'):
+                tokens = self._llm.tokenize(formatted_prompt.encode('utf-8'))
+                token_count = len(tokens)
+
+                # Calculate usage percentage
+                usage_pct = (token_count / context_window) * 100 if context_window > 0 else 0
+
+                # Log comprehensive prompt metrics
+                logger.info(
+                    f"[{thread_name}] Prompt metrics for {model_id_with_role}: "
+                    f"{len(formatted_prompt)} chars, {token_count}/{context_window} tokens "
+                    f"({usage_pct:.1f}% of context window)"
+                )
+
+                # Warning if approaching context limit
+                if token_count > context_window * 0.8 and token_count <= context_window:
+                    logger.warning(
+                        f"[{thread_name}] Prompt for {model_id_with_role} is using >{usage_pct:.1f}% "
+                        f"of context window ({token_count}/{context_window} tokens)"
+                    )
+                # Error if exceeding context limit
+                if token_count > context_window:
+                    logger.error(
+                        f"[{thread_name}] CONTEXT WINDOW EXCEEDED: Prompt token count ({token_count}) exceeds "
+                        f"model's context window ({context_window}) for {model_id_with_role}"
+                    )
+                    raise ModelError(
+                        f"Input exceeds model's context window ({token_count} > {context_window}). "
+                        f"This can cause hanging or OOM errors."
+                    )
+            else:
+                logger.warning(
+                    f"[{thread_name}] Cannot count tokens for {model_id_with_role} - tokenize method not available")
+                # Still log basic character count
+                logger.debug(
+                    f"[{thread_name}] Starting generation task for model {model_id_with_role}. "
+                    f"Prompt length: {len(formatted_prompt)} characters. Context window: {context_window} tokens."
+                )
+        except ModelError as me:
+            # Re-raise model errors (like context window exceeded)
+            raise
+        except Exception as token_e:
+            # Log but continue for other token counting errors
+            logger.warning(
+                f"[{thread_name}] Error counting tokens for {model_id_with_role}: {token_e}. "
+                f"Prompt has {len(formatted_prompt)} characters. Context window: {context_window} tokens. "
+                f"Proceeding with generation anyway."
+            )
+
         start_gen_time = time.time()
 
         try:
@@ -454,6 +555,13 @@ class GGUFModel:
             completion_tokens = usage_stats.get("completion_tokens", 0) if isinstance(usage_stats, dict) else 0
             prompt_tokens = usage_stats.get("prompt_tokens", 0) if isinstance(usage_stats, dict) else 0
 
+            # Compare reported prompt tokens with our count if available
+            if token_count > 0 and prompt_tokens > 0 and abs(token_count - prompt_tokens) > 5:
+                logger.debug(
+                    f"[{thread_name}] Token count discrepancy for {model_id_with_role}: "
+                    f"pre-count={token_count}, reported={prompt_tokens}, diff={token_count - prompt_tokens}"
+                )
+
             # Calculate confidence score ONLY IF flag is set and data potentially available
             confidence_score = None
             if compute_confidence_flag:
@@ -474,7 +582,8 @@ class GGUFModel:
                 "text": generated_text,
                 "generation_time": generation_time,
                 "token_count": completion_tokens,
-                "prompt_token_count": prompt_tokens,
+                "prompt_token_count": prompt_tokens if prompt_tokens > 0 else token_count,
+                # Use our count if reported is missing
                 # Store calculated score (might be None)
                 "confidence": confidence_score,
                 # Keep raw output for potential use by external confidence logic
@@ -510,35 +619,38 @@ class GGUFModel:
         chat_formatter_name = self._parameters.get("chat_format")
 
         if chat_formatter_name and self._llm and hasattr(self._llm, 'chat_handler') and self._llm.chat_handler:
-             try:
-                 messages = []
-                 if system_prompt:
-                     messages.append({"role": "system", "content": system_prompt})
-                 messages.append({"role": "user", "content": prompt})
+            try:
+                messages = []
+                if system_prompt:
+                    messages.append({"role": "system", "content": system_prompt})
+                messages.append({"role": "user", "content": prompt})
 
-                 # llama-cpp-python >=0.2.X uses create_chat_completion handlers
-                 if hasattr(self._llm, 'create_chat_completion'):
-                     # This is complex as the handler isn't easily accessible just for prompt formatting
-                     # We might need to manually apply formatting based on chat_formatter_name if possible,
-                     # or rely on simpler system prompt prepending as fallback.
-                     logger.warning(f"Automatic chat formatting via create_chat_completion handler not fully implemented for prompt preparation in GGUFModel._format_prompt for {self._model_id}. Falling back.")
-                 # Handle older chat_handler style if necessary (less likely now)
-                 elif hasattr(self._llm, 'chat_handler'):
-                       chat_handler = self._llm.chat_handler(messages=messages)
-                       full_prompt = chat_handler.prompt() # Deprecated?
-                       logger.debug(f"Formatted prompt using legacy Llama chat_handler ({chat_formatter_name}) for {self._model_id}")
-                       return full_prompt
+                # llama-cpp-python >=0.2.X uses create_chat_completion handlers
+                if hasattr(self._llm, 'create_chat_completion'):
+                    # This is complex as the handler isn't easily accessible just for prompt formatting
+                    # We might need to manually apply formatting based on chat_formatter_name if possible,
+                    # or rely on simpler system prompt prepending as fallback.
+                    logger.warning(
+                        f"Automatic chat formatting via create_chat_completion handler not fully implemented for prompt preparation in GGUFModel._format_prompt for {self._model_id}. Falling back.")
+                # Handle older chat_handler style if necessary (less likely now)
+                elif hasattr(self._llm, 'chat_handler'):
+                    chat_handler = self._llm.chat_handler(messages=messages)
+                    full_prompt = chat_handler.prompt()  # Deprecated?
+                    logger.debug(
+                        f"Formatted prompt using legacy Llama chat_handler ({chat_formatter_name}) for {self._model_id}")
+                    return full_prompt
 
-             except Exception as e:
-                 logger.warning(f"Failed to use Llama chat formatting for {self._model_id} (format: {chat_formatter_name}). Falling back. Error: {e}")
+            except Exception as e:
+                logger.warning(
+                    f"Failed to use Llama chat formatting for {self._model_id} (format: {chat_formatter_name}). Falling back. Error: {e}")
 
         # Fallback: Basic system prompt prepending
         if system_prompt:
-             logger.debug(f"Formatting prompt using basic system prompt prepend for {self._model_id}")
-             return f"{system_prompt.strip()}\n\n{prompt.strip()}"
+            logger.debug(f"Formatting prompt using basic system prompt prepend for {self._model_id}")
+            return f"{system_prompt.strip()}\n\n{prompt.strip()}"
         else:
-             logger.debug(f"No special prompt formatting applied for {self._model_id}")
-             return prompt.strip()
+            logger.debug(f"No special prompt formatting applied for {self._model_id}")
+            return prompt.strip()
 
     # --- Standard Getters ---
     def get_id(self) -> str:
