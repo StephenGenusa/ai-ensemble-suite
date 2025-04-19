@@ -65,7 +65,8 @@ BAGGING_CONFIG = {
                 "temperature": 0.7,
                 "top_p": 0.9,
                 "max_tokens": 1024,
-                "n_ctx": 8192
+                "n_ctx": 8192,
+                "n_gpu_layers": -1
             }
         },
         "deepseek": {
@@ -75,7 +76,8 @@ BAGGING_CONFIG = {
                 "temperature": 0.75,
                 "top_p": 0.9,
                 "max_tokens": 2048,
-                "n_ctx": 8192
+                "n_ctx": 8192,
+                "n_gpu_layers": -1
             }
         },
         "llama": {
@@ -85,7 +87,8 @@ BAGGING_CONFIG = {
                 "temperature": 0.72,
                 "top_p": 0.9,
                 "max_tokens": 1024,
-                "n_ctx": 8192
+                "n_ctx": 8192,
+                "n_gpu_layers": -1
             }
         }
     },
@@ -105,7 +108,7 @@ BAGGING_CONFIG = {
             {
                 "name": "meta_analysis",
                 "type": "integration",
-                "models": ["mistral"],  # Changed from deepseek to mistral
+                "models": ["mistral"],
                 "input_from": ["bagged_responses"],
                 "prompt_template": "meta_analysis_prompt"
             }
