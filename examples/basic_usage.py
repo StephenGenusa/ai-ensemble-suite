@@ -6,11 +6,15 @@ import sys
 import yaml
 from pathlib import Path
 import json
-
-from ai_ensemble_suite.utils.tracing import NumpyEncoder
+import textwrap
 
 # Add the src directory to the path if running from the examples directory
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / 'src'))
+script_dir = Path(__file__).resolve().parent
+project_root = script_dir.parent
+src_dir = project_root / "src"
+sys.path.insert(0, str(src_dir))
+
+from ai_ensemble_suite.utils.tracing import NumpyEncoder
 
 # Now import from the library
 try:
@@ -34,7 +38,7 @@ MODEL_DIR = Path(__file__).resolve().parent.parent / "models"
 BASIC_CONFIG = {
     "models": {
         "mistral": {
-            "path": str(MODEL_DIR / "mistral-7b-instruct-v0.2.Q4_K_M.gguf"), # Ensure model exists here
+            "path": str(MODEL_DIR / "DeepSeek-R1-Distill-Llama-8B-Q6_K.gguf"), # Ensure model exists here
             "role": "primary",
             "parameters": {
                 "temperature": 0.7,
@@ -134,31 +138,54 @@ async def main():
                 model_ids = ensemble.model_manager.get_model_ids()
                 if not model_ids:
                     print("No models were successfully initialized or configured.")
-                else:
-                    for model_id in model_ids:
-                        try:
+                # else:
+                #     for model_id in model_ids:
+                        # try:
                             # Get the fully resolved config for the model, including defaults
-                            model_config = ensemble.config_manager.get_model_config(model_id)
-                            params = model_config.get('parameters', {})
+                            # model_config = ensemble.config_manager.get_model_config(model_id)
+                            # params = model_config.get('parameters', {})
                             # ConfigManager applies defaults, but double-check n_gpu_layers
                             # The default in gguf_model.py is 0 if not specified anywhere.
-                            n_gpu_layers = params.get('n_gpu_layers', 0)
+                            # n_gpu_layers = params.get('n_gpu_layers', 0)
 
-                            if n_gpu_layers == -1:
-                                usage = "GPU (Attempting Max Layers)"
-                            elif n_gpu_layers > 0:
-                                usage = f"GPU ({n_gpu_layers} Layers)"
-                            else:
-                                usage = "CPU"
-                            print(f"- Model '{model_id}': Configured for {usage}")
-                        except (ConfigurationError, KeyError, ModelError) as config_err:
+                            # if n_gpu_layers == -1:
+                            #     usage = "GPU (Attempting Max Layers)"
+                            # elif n_gpu_layers > 0:
+                            #     usage = f"GPU ({n_gpu_layers} Layers)"
+                            # else:
+                            #     usage = "CPU"
+                            # print(f"- Model '{model_id}': Configured for {usage}")
+                        # except (ConfigurationError, KeyError, ModelError) as config_err:
                            # Catch errors if a model failed init but ID exists, or config is bad
-                           print(f"- Model '{model_id}': Error retrieving/interpreting config - {config_err}")
+                           # print(f"- Model '{model_id}': Error retrieving/interpreting config - {config_err}")
             except Exception as e:
                 # Catch errors getting model IDs etc.
                 print(f"Error retrieving model hardware configuration: {e}")
             print("------------------------------------")
             # --- End Hardware Configuration Display --- #
+
+            def display_wrapped_text(text, width=60):
+                if not text or not text.strip():
+                    print("[No meaningful content generated]")
+                    return
+
+                # Replace literal "\n" with actual newlines if present
+                if isinstance(text, str):
+                    text = text.replace('\\n', '\n')
+
+                # Split by actual newlines and wrap each paragraph
+                paragraphs = text.split('\n')
+                for i, paragraph in enumerate(paragraphs):
+                    if paragraph.strip():  # Skip empty paragraphs
+                        wrapped = textwrap.fill(paragraph, width=width,
+                                                break_long_words=False,
+                                                replace_whitespace=False)
+                        print(wrapped)
+                        # Add a newline between paragraphs, but not after the last one
+                        if i < len(paragraphs) - 1:
+                            print()
+
+                print(f"\n[Response length: {len(text)} characters]")
 
             # Ask a question
             query = "Explain the concept of quantum entanglement in simple terms."
@@ -177,7 +204,7 @@ async def main():
                  final_response = response_data.get('response', final_response)
             elif isinstance(response_data, str):
                  final_response = response_data
-            print(final_response)
+            print(display_wrapped_text(final_response))
             print("=" * 80)
 
             # --- Print Execution Stats ---
