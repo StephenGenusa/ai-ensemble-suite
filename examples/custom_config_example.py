@@ -8,7 +8,10 @@ import yaml
 from pathlib import Path
 
 # Add the src directory to the path if running from the examples directory
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+script_dir = Path(__file__).resolve().parent
+project_root = script_dir.parent
+src_dir = project_root / "src"
+sys.path.insert(0, str(src_dir))
 
 from ai_ensemble_suite import Ensemble
 from ai_ensemble_suite.utils.logging import logger
@@ -64,8 +67,10 @@ aggregation:
 async def main():
     """Run custom config example."""
     # Create custom config file template
-    config_path = "examples/config/custom_config.yaml"
-    
+    config_dir = script_dir / "config"
+    config_dir.mkdir(exist_ok=True)
+    config_path = config_dir / "custom_config.yaml"
+
     # Create directory if it doesn't exist
     os.makedirs(os.path.dirname(config_path), exist_ok=True)
     
@@ -74,7 +79,7 @@ async def main():
         with open(config_path, 'w') as f:
             f.write(CUSTOM_CONFIG_TEMPLATE)
     
-        print(f"Created custom config template at {config_path}")
+        print(f"This program has just created a custom config template at {config_path}")
         print("Please edit this file with your actual model paths before running this example.")
         print("Then run this script again.")
         return
