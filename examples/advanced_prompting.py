@@ -23,14 +23,26 @@ models_dir = project_root / "models"
 # Advanced prompting configuration
 ADVANCED_PROMPTING_CONFIG = {
     "models": {
-        "model1": {
+        "mistral": {
             "path": str(models_dir / "Mistral-7B-Instruct-v0.3-Q4_K_M.gguf"),
             "role": "primary",
             "parameters": {
                 "temperature": 0.7,
                 "top_p": 0.9,
-                "max_tokens": 2048,
-                "n_ctx": 8192  # Increased context window
+                "max_tokens": 4096,
+                "n_ctx": 32768,
+                "n_gpu_layers": -1
+            }
+        },
+        "deepseek": {
+            "path": str(models_dir / "DeepSeek-R1-Distill-Qwen-7B-Q6_K.gguf"),
+            "role": "reasoning",
+            "parameters": {
+                "temperature": 0.7,
+                "top_p": 0.9,
+                "max_tokens": 4096,
+                "n_ctx": 32768,
+                "n_gpu_layers": -1
             }
         }
     },
@@ -40,19 +52,19 @@ ADVANCED_PROMPTING_CONFIG = {
             {
                 "name": "basic_response",
                 "type": "async_thinking",
-                "models": ["model1"],
+                "models": ["mistral"],
                 "prompt_template": "expert_prompt"
             },
             {
                 "name": "cot_response",
                 "type": "async_thinking",
-                "models": ["model1"],
+                "models": ["deepseek"],
                 "prompt_template": "cot_prompt"
             },
             {
                 "name": "comparative_analysis",
                 "type": "integration",
-                "models": ["model1"],
+                "models": ["mistral"],
                 "input_from": ["basic_response", "cot_response"],
                 "prompt_template": "comparative_analysis"
             }
@@ -161,23 +173,25 @@ async def main():
                     print("\nStandard Expert Prompt Response:")
                     print("-" * 50)
                     output_data = phases['basic_response']['output_data']
-                    if 'outputs' in output_data and 'model1' in output_data['outputs']:
-                        basic = output_data['outputs']['model1']
+                    if 'outputs' in output_data:
+                        # Get the first output from any model (typically mistral)
+                        basic = list(output_data['outputs'].values())[0] if output_data['outputs'] else ""
                     else:
                         basic = output_data.get('output', '')
                     # Display at most the first 500 characters for brevity
-                    display_wrapped_text(basic[:500] + "..." if len(basic) > 500 else basic)
+                    display_wrapped_text(basic)
 
                 if 'cot_response' in phases and 'output_data' in phases['cot_response']:
                     print("\nChain of Thought Prompt Response:")
                     print("-" * 50)
                     output_data = phases['cot_response']['output_data']
-                    if 'outputs' in output_data and 'model1' in output_data['outputs']:
-                        cot = output_data['outputs']['model1']
+                    if 'outputs' in output_data:
+                        # Get the first output from any model (typically deepseek)
+                        cot = list(output_data['outputs'].values())[0] if output_data['outputs'] else ""
                     else:
                         cot = output_data.get('output', '')
                     # Display at most the first 500 characters for brevity
-                    display_wrapped_text(cot[:500] + "..." if len(cot) > 500 else cot)
+                    display_wrapped_text(cot)
 
             # Print execution statistics
             print(f"\nExecution time: {response_data['execution_time']:.2f} seconds")
