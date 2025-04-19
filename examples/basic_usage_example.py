@@ -204,7 +204,7 @@ async def main():
                  final_response = response_data.get('response', final_response)
             elif isinstance(response_data, str):
                  final_response = response_data
-            print(display_wrapped_text(final_response))
+            display_wrapped_text(final_response)
             print("=" * 80)
 
             # --- Print Execution Stats ---

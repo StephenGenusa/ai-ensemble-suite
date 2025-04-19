@@ -226,7 +226,7 @@ async def main():
             # Print response
             print("\nSynthesized Response:")
             print("=" * 80)
-            print(display_wrapped_text(response_data['response']))
+            display_wrapped_text(response_data['response'])
             print("=" * 80)
 
 
