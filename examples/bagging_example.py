@@ -353,7 +353,8 @@ async def main():
                     print("\nMeta-Analysis:")
                     print("-" * 80)
                     meta_data = phases['meta_analysis']['output_data']
-                    meta_output = meta_data.get('output', '')
+                    # Use primary_output instead of output
+                    meta_output = meta_data.get('primary_output', '')
                     display_wrapped_text(meta_output)
 
             # Print execution statistics
