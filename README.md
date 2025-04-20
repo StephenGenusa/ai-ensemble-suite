@@ -54,6 +54,14 @@ SET CMAKE_ARGS="-DGGML_CUDA=on"
 SET FORCE_CMAKE=1
 pip install ai-ensemble-suite
 ```
+
+For Apple Metal (macOS):
+
+```bash
+CMAKE_ARGS="-DLLAMA_METAL=on" FORCE_CMAKE=1 pip install llama-cpp-python
+pip install ai-ensemble-suite
+```
+
 ### Optional Dependencies
 
 The library has optional dependencies that can be installed with:
@@ -61,23 +69,6 @@ The library has optional dependencies that can be installed with:
 ```bash
 pip install "ai-ensemble-suite[rich]"  # For enhanced console output
 pip install "ai-ensemble-suite[dev]"   # For development tools
-```
-
-
-### Installation with GPU acceleration
-
-For NVIDIA GPU acceleration:
-
-```bash
-CMAKE_ARGS="-DGGML_CUDA=on" FORCE_CMAKE=1 pip install llama-cpp-python
-pip install ai-ensemble-suite
-```
-
-For Apple Metal (macOS):
-
-```bash
-CMAKE_ARGS="-DLLAMA_METAL=on" FORCE_CMAKE=1 pip install llama-cpp-python
-pip install ai-ensemble-suite
 ```
 
 ### Development Installation
