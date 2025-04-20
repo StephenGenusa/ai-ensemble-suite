@@ -37,6 +37,7 @@ Python framework for multiple GGUF language models to collaborate on tasks using
 
 - Python >= 3.10
 - Sufficient RAM for running multiple language models
+- Preferably a GPU with sufficient VRAM to load multiple models, otherwise you llama-cpp will store models in RAM and use your CPU for inference
 
 <!-- 
 ### Install via pip
@@ -460,8 +461,7 @@ The library provides several strategies for aggregating the outputs from multipl
 
 ```
 ai_ensemble_suite/
-├── 📁 __init__.py             # Package exports (Ensemble class)
-│
+├── 📄 __init__.py             # Package exports (Ensemble class)
 ├── 📄 ensemble.py             # Main Ensemble class implementation
 │
 ├── 📁 config/
@@ -511,54 +511,15 @@ ai_ensemble_suite/
 │   ├── 📄 __init__.py         # Exception exports
 │   └── 📄 errors.py           # Custom exception definitions
 │
-├── 📁 utils/
-│   ├── 📄 __init__.py         # Utilities package exports
-│   ├── 📄 logging.py          # Logging configuration
-│   ├── 📄 tracing.py          # Execution tracing (TraceCollector)
-│   ├── 📄 concurrency.py      # Concurrency utilities
-│   ├── 📄 prompt_tools.py     # Prompt manipulation utilities
-│   └── 📄 validators.py       # Validation utilities
-│
-└── 📁 data/
-    ├── 📁 templates/          # Default prompt templates
-    │   ├── 📄 base_prompts.yaml
-    │   ├── 📄 collaboration_prompts.yaml
-    │   └── 📄 aggregation_prompts.yaml
-    │
-    └── 📁 schemas/            # JSON schemas for validation
-        └── 📄 config_schema.json
+└── 📁 utils/
+    ├── 📄 __init__.py         # Utilities package exports
+    ├── 📄 logging.py          # Logging configuration
+    ├── 📄 tracing.py          # Execution tracing (TraceCollector)
+    ├── 📄 concurrency.py      # Concurrency utilities
+    ├── 📄 prompt_tools.py     # Prompt manipulation utilities
+    └── 📄 validators.py       # Validation utilities
+ 
 ```
-
-## Key File Purpose Reference
-
-### Core Files
-- **ensemble.py**: Central orchestrator class that coordinates the entire system
-- **config/config_manager.py**: Handles loading, validation, and access to configuration
-- **models/model_manager.py**: Manages model loading, inference, and lifecycle
-- **config/template_manager.py**: Handles prompt templates for interactions
-
-### Abstract Base Classes
-- **collaboration/base.py**: `BaseCollaborationPhase` abstract class defining phase interface
-- **aggregation/base.py**: `BaseAggregator` abstract class for aggregation strategies
-
-### Implementation Files
-- **collaboration/\*.py**: Various collaboration pattern implementations
-- **aggregation/\*.py**: Different aggregation strategy implementations
-- **models/gguf_model.py**: GGUF format model implementation with llama.cpp binding
-
-### Support Systems
-- **exceptions/errors.py**: Custom exception hierarchy for proper error handling
-- **utils/logging.py**: Structured logging configuration
-- **utils/tracing.py**: `TraceCollector` for execution tracing
-- **config/schema.py**: JSON Schema definitions for configuration validation
-
-### Data Files
-- **data/templates/\*.yaml**: Default prompt templates for different purposes
-- **data/schemas/config_schema.json**: JSON validation schema for configuration
-
-This structure reflects a well-organized modular design with clear separation of concerns between different components of the system, making it easy to extend with new collaboration patterns or aggregation strategies.
-```
-
 [Back to top](#ai-ensemble-suite)
 
 ## API Reference
