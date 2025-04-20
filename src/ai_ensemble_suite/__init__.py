@@ -7,7 +7,7 @@ on tasks using structured communication patterns, aggregating their outputs into
 coherent responses.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.5.1"
 
 # Public API exports
 from ai_ensemble_suite.ensemble import Ensemble

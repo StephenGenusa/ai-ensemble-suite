@@ -37,14 +37,32 @@ Python framework for multiple GGUF language models to collaborate on tasks using
 
 - Python >= 3.10
 - Sufficient RAM for running multiple language models
-- Preferably a GPU with sufficient VRAM to load multiple models, otherwise you llama-cpp will store models in RAM and use your CPU for inference
+- Preferably a GPU with sufficient VRAM to load multiple models, otherwise your llama-cpp will store models in RAM and use your CPU for inference
 
-<!-- 
 ### Install via pip
 
+For GPU acceleration note the export/set. See optional dependencies below before installing
+
 ```bash
+export CMAKE_ARGS="-DGGML_CUDA=on"
+export FORCE_CMAKE=1
 pip install ai-ensemble-suite
 ```
+
+```windows
+SET CMAKE_ARGS="-DGGML_CUDA=on"
+SET FORCE_CMAKE=1
+pip install ai-ensemble-suite
+```
+### Optional Dependencies
+
+The library has optional dependencies that can be installed with:
+
+```bash
+pip install "ai-ensemble-suite[rich]"  # For enhanced console output
+pip install "ai-ensemble-suite[dev]"   # For development tools
+```
+
 
 ### Installation with GPU acceleration
 
@@ -61,7 +79,6 @@ For Apple Metal (macOS):
 CMAKE_ARGS="-DLLAMA_METAL=on" FORCE_CMAKE=1 pip install llama-cpp-python
 pip install ai-ensemble-suite
 ```
--->
 
 ### Development Installation
 
@@ -593,24 +610,6 @@ class BaseAggregator(ABC):
     @abstractmethod
     async def aggregate(self, outputs: Dict[str, Dict[str, Any]], context: Dict[str, Any], trace_collector: Optional[TraceCollector] = None) -> Dict[str, Any]:
         """Aggregate the outputs from collaboration phases."""
-```
-
-[Back to top](#ai-ensemble-suite)
-
-## Requirements
-
-- Python >= 3.10
-- llama-cpp-python >= 0.2.0
-- pyyaml >= 6.0
-- asyncio >= 3.4.3
-
-### Optional Dependencies
-
-The library has optional dependencies that can be installed with:
-
-```bash
-pip install "ai-ensemble-suite[rich]"  # For enhanced console output
-pip install "ai-ensemble-suite[dev]"   # For development tools
 ```
 
 [Back to top](#ai-ensemble-suite)
