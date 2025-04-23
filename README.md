@@ -41,6 +41,7 @@ Python framework for multiple GGUF language models to collaborate on tasks using
 - [Decision Guide: Choosing Collaboration & Aggregation Patterns](#decision-guide-choosing-collaboration--aggregation-patterns)
 - [Collaboration Phases](#collaboration-phases)
 - [Aggregation Strategies](#aggregation-strategies)
+- [YAML Configuration and Template Guide](YAML_Configuration_And_Templates.md)
 - [Architecture Diagram](#architecture-diagram)
 - [Class Hierarchy and Interaction Diagram](#class-hierarchy-and-interaction-diagram)
 - [Project File Structure](#project-file-structure)
