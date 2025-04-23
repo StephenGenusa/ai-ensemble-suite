@@ -3,9 +3,9 @@
 > **Alpha Release (v0.5)**: This library is in active development. While already functional and useful for real-world applications, some APIs may change, and additional cleanup and feature development are in progress. Feedback and contributions are welcome!
 > 
 > I have added another interesting example examples/debate_cyclical_improvement.py. 
-> This example sumbits a query, performs answer inference and then performs an iterative critique with scoring followed
+> This example submits a query, performs answer inference and then performs an iterative critique with scoring followed
 > by improvement of the answer based on the critique until the judging AI rates the answer as 10/10 or max_iterations 
-> occurs. This is a very cool example IMO.
+> occurs. This is a very cool example.
 > 
 > Evaluation:
 > ----------
