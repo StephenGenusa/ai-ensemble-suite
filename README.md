@@ -1,6 +1,27 @@
 # AI Ensemble Suite
 
 > **Alpha Release (v0.5)**: This library is in active development. While already functional and useful for real-world applications, some APIs may change, and additional cleanup and feature development are in progress. Feedback and contributions are welcome!
+> 
+> I have added another interesting example examples/debate_cyclical_improvement.py. 
+> This example sumbits a query, performs answer inference and then performs an iterative critique with scoring followed
+> by improvement of the answer based on the critique until the judging AI rates the answer as 10/10 or max_iterations 
+> occurs. This is a very cool example IMO.
+> 
+> Evaluation:
+> ----------
+> RATING: 10
+> 
+> EXPLANATION: This response is comprehensive, well-organized, and
+> addresses all aspects of the original query. It provides an informed
+> perspective on the likelihood of achieving AGI in the next decade,
+> potential societal implications, and various factors to consider, such
+> as economic impacts, global disparities, intermediate milestones,
+> biases in development, and ethical guidelines. The response is also
+> written in a clear, concise manner that makes it easy for readers to
+> understand. Overall, this is an exceptional response that deserves a
+> perfect score of 10.
+> 
+> Rating: 10.0/10
 
 [![Python Versions](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
