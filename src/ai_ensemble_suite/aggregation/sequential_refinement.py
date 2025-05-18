@@ -1,3 +1,5 @@
+# ai_ensemble_suite/aggregation/sequential_refinement.py
+
 """Sequential Refinement aggregation strategy."""
 
 from typing import Dict, Any, Optional, List, Set, Tuple, TYPE_CHECKING

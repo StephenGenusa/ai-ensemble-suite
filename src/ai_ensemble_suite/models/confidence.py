@@ -1,4 +1,4 @@
-# src/ai_ensemble_suite/models/confidence.py
+# ai_ensemble_suite/models/confidence.py
 
 """Confidence estimation methods for model outputs."""
 

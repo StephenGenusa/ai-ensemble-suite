@@ -1,4 +1,4 @@
-# src/ai_ensemble_suite/config/schema.py
+# ai_ensemble_suite/config/schema.py
 
 """Schema definitions for validating configuration."""
 

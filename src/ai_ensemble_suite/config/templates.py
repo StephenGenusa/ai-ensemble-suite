@@ -1,16 +1,16 @@
-# src/ai_ensemble_suite/config/templates.py
+# ai_ensemble_suite/config/templates.py
 
 """Prompt templates for different collaboration patterns."""
 
 # Basic prompt templates
 BASIC_TEMPLATES = {
     # General template for initial response
-    "single_query": "You are an AI assistant. Answer the following question or respond to the instruction:\n\n{query}",
+    "single_query": "You are an AI assistant. Answer the following question or respond to the instruction:\n\n{{ query }}",
     
     # Template for self-evaluation
     "self_evaluation": """You previously provided this response:
 
-{response}
+{{ response }}
 
 Evaluate your confidence in this response on a scale from 1-10, where:
 1 = Completely uncertain or guessing
@@ -25,17 +25,17 @@ DEBATE_TEMPLATES = {
     "debate_initial": """You are an AI assistant with expertise in providing balanced, thoughtful responses. 
 Address the following query with a well-reasoned response:
 
-QUERY: {query}
+QUERY: {{ query }}
 
 Provide a comprehensive response that considers multiple perspectives.""",
     
     # Template for critique in a debate
     "debate_critique": """You are a thoughtful critic. Review the following response to the question and provide constructive criticism.
 
-ORIGINAL QUESTION: {query}
+ORIGINAL QUESTION: {{ query }}
 
 RESPONSE TO EVALUATE:
-{response}
+{{ response }}
 
 Critically evaluate this response focusing on:
 1. Factual accuracy - Are there any errors or misleading statements?
@@ -49,13 +49,13 @@ Provide specific, actionable feedback for improvement.""",
     # Template for a response to critique
     "debate_defense": """You are the original responder to a question that has received critique.
 
-ORIGINAL QUESTION: {query}
+ORIGINAL QUESTION: {{ query }}
 
 YOUR ORIGINAL RESPONSE:
-{response}
+{{ response }}
 
 CRITIC'S FEEDBACK:
-{critique}
+{{ critique }}
 
 Respond to these criticisms by either:
 1. Defending your original points with additional evidence and reasoning, or
@@ -66,16 +66,16 @@ Provide a thoughtful, balanced response to the critiques while maintaining intel
     # Template for synthesis after debate
     "debate_synthesis": """You are a neutral synthesizer reviewing a debate on the following question:
 
-ORIGINAL QUESTION: {query}
+ORIGINAL QUESTION: {{ query }}
 
 INITIAL RESPONSE:
-{response}
+{{ response }}
 
 CRITIQUE:
-{critique}
+{{ critique }}
 
 DEFENSE:
-{defense}
+{{ defense }}
 
 Based on this exchange, provide a balanced synthesis that:
 1. Identifies areas of agreement between the perspectives
@@ -92,7 +92,7 @@ ROLE_TEMPLATES = {
     "role_researcher": """You are a thorough researcher. For the following query, gather comprehensive, relevant facts. 
 Focus on established knowledge, important context, and different perspectives.
 
-QUERY: {query}
+QUERY: {{ query }}
 
 Provide detailed information with a focus on accuracy and completeness.""",
     
@@ -100,10 +100,10 @@ Provide detailed information with a focus on accuracy and completeness.""",
     "role_analyst": """You are a critical analyst. Review the following research information and evaluate its quality,
 identify potential flaws, and suggest areas needing further investigation.
 
-ORIGINAL QUESTION: {query}
+ORIGINAL QUESTION: {{ query }}
 
 RESEARCH INFORMATION:
-{research}
+{{ research }}
 
 Analyze this information for:
 1. Logical consistency
@@ -118,13 +118,13 @@ Provide a structured analysis that identifies strengths and weaknesses.""",
     "role_synthesizer": """You are a knowledge synthesizer tasked with creating a coherent, comprehensive response
 based on research and analysis.
 
-ORIGINAL QUESTION: {query}
+ORIGINAL QUESTION: {{ query }}
 
 RESEARCH INFORMATION:
-{research}
+{{ research }}
 
 CRITICAL ANALYSIS:
-{analysis}
+{{ analysis }}
 
 Create a synthesis that:
 1. Integrates the factual information with analytical insights
@@ -140,17 +140,17 @@ HIERARCHICAL_TEMPLATES = {
     # Template for initial draft
     "hierarchical_draft": """You are tasked with creating an initial draft response to the following query:
 
-QUERY: {query}
+QUERY: {{ query }}
 
 Provide a clear, straightforward response that addresses the core question.""",
     
     # Template for technical review
     "hierarchical_technical_review": """You are a technical specialist reviewing a draft response.
 
-ORIGINAL QUERY: {query}
+ORIGINAL QUERY: {{ query }}
 
 DRAFT RESPONSE:
-{draft}
+{{ draft }}
 
 Review this response for technical accuracy. Identify any:
 1. Technical errors or misunderstandings
@@ -162,10 +162,10 @@ Provide specific corrections and suggestions for technical improvements.""",
     # Template for clarity review
     "hierarchical_clarity_review": """You are a clarity expert reviewing a response.
 
-ORIGINAL QUERY: {query}
+ORIGINAL QUERY: {{ query }}
 
 CURRENT RESPONSE:
-{response}
+{{ response }}
 
 Review this response for clarity and accessibility. Identify any:
 1. Confusing explanations or jargon without proper explanation
@@ -177,16 +177,16 @@ Suggest specific improvements to make this response clearer and more accessible.
     # Template for final refinement
     "hierarchical_final_refinement": """You are tasked with creating the final, polished response.
 
-ORIGINAL QUERY: {query}
+ORIGINAL QUERY: {{ query }}
 
 CURRENT RESPONSE:
-{response}
+{{ response }}
 
 TECHNICAL REVIEW:
-{technical_review}
+{{ technical_review }}
 
 CLARITY REVIEW:
-{clarity_review}
+{{ clarity_review }}
 
 Using these reviews, create a final response that:
 1. Incorporates the technical corrections and improvements

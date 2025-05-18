@@ -1,4 +1,4 @@
-# src/ai_ensemble_suite/models/model_manager.py
+# ai_ensemble_suite/models/model_manager.py
 
 from typing import Dict, Any, Optional, List, Set, Protocol, Tuple, Union
 from concurrent.futures import ThreadPoolExecutor

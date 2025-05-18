@@ -1,3 +1,5 @@
+# ai_ensemble_suite/aggregation/confidence_based.py
+
 """Confidence-Based aggregation strategy."""
 
 from typing import Dict, Any, Optional, List, Set, Tuple, TYPE_CHECKING

@@ -1,4 +1,4 @@
-# src/ai_ensemble_suite/models/exceptions.py
+# ai_ensemble_suite/models/exceptions.py
 
 """Exception classes for ai-ensemble-suite."""
 

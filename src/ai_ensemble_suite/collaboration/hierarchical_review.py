@@ -1,4 +1,4 @@
-# src/ai_ensemble_suite/collaboration/hierarchical_review.py
+# ai_ensemble_suite/collaboration/hierarchical_review.py
 
 """Hierarchical Review collaboration phase implementation."""
 

@@ -1,3 +1,4 @@
+# ai_ensemble_suite/collaboration/structured_debate/base_debate.py
 
 """Base class for structured debate collaboration phases."""
 

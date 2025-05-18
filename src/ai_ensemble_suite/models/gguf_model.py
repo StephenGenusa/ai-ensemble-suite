@@ -1,4 +1,4 @@
-# src/ai_ensemble_suite/models/gguf_model.py
+# ai_ensemble_suite/models/gguf_model.py
 
 """Wrapper for llama-cpp-python GGUF models."""
 

@@ -1,3 +1,4 @@
+# ai_ensemble_suite/collaboration/perspective_rotation.py
 
 """Perspective Rotation collaboration phase implementation."""
 

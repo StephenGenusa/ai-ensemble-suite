@@ -1,4 +1,4 @@
-# src/ai_ensemble_suite/aggregation/multidimensional_voting.py
+# ai_ensemble_suite/aggregation/multidimensional_voting.py
 
 """Multi-dimensional Voting aggregation strategy."""
 

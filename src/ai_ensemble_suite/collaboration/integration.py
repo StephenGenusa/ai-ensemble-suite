@@ -1,3 +1,4 @@
+# ai_ensemble_suite/collaboration/integration.py
 
 """Integration/Refinement collaboration phase implementation."""
 

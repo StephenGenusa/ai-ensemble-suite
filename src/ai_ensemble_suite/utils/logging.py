@@ -1,4 +1,4 @@
-# src/ai_ensemble_suite/utils/logging.py
+# ai_ensemble_suite/utils/logging.py
 
 """Logging utilities for ai-ensemble-suite."""
 

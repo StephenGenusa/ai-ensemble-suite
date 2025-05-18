@@ -1,3 +1,4 @@
+# ai_ensemble_suite/collaboration/__init__.py
 
 """Collaboration phases for ai-ensemble-suite."""
 

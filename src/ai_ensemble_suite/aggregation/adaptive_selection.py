@@ -1,3 +1,5 @@
+# ai_ensemble_suite/aggregation/adaptive_selection.py
+
 """Adaptive Selection aggregation strategy."""
 
 from typing import Dict, Any, Optional, List, Set, Tuple, Type,TYPE_CHECKING
@@ -281,10 +283,10 @@ class AdaptiveSelection(BaseAggregator):
                       default_selector_prompt = f"""Given the user query and available aggregation strategies, select the *single best* strategy name.
 
 USER QUERY:
-{{query}}
+{{ query }}
 
 AVAILABLE STRATEGIES:
-{{strategy_options}}
+{{ strategy_options }}
 
 Analyze the query and choose the strategy name from the list above that is most suitable.
 Respond with ONLY the strategy name (e.g., 'confidence_based', 'ensemble_fusion')."""

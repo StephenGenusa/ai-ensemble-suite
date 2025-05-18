@@ -1,4 +1,4 @@
-# src/ai_ensemble_suite/utils/prompt_utils.py
+# ai_ensemble_suite/utils/prompt_utils.py
 
 """Utilities for prompt formatting and handling."""
 

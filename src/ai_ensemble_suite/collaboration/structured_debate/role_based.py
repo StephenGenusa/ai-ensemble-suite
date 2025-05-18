@@ -1,3 +1,4 @@
+# ai_ensemble_suite/collaboration/structured_debate/role_based.py
 
 """Role-based debate pattern implementation."""
 

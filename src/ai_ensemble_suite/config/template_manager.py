@@ -1,4 +1,4 @@
-# src/ai_ensemble_suite/utils/template_manager.py
+# ai_ensemble_suite/utils/template_manager.py
 
 """Template management module for AI ensemble."""
 

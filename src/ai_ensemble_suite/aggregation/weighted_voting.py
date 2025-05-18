@@ -1,3 +1,5 @@
+# ai_ensemble_suite/aggregation/weighted_voting.py
+
 """Weighted Voting aggregation strategy."""
 
 from typing import Dict, Any, Optional, List, Set, Tuple, TYPE_CHECKING

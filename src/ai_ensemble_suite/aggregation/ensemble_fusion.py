@@ -1,4 +1,4 @@
-# src/ai_ensemble_suite/aggregation/ensemble_fusion.py
+# ai_ensemble_suite/aggregation/ensemble_fusion.py
 
 """Ensemble Fusion aggregation strategy."""
 
@@ -109,10 +109,10 @@ class EnsembleFusion(BaseAggregator):
             default_fusion_template = f"""Synthesize the following outputs into a single, high-quality response to the original query. Focus on integrating the best aspects, ensuring accuracy, clarity, and coherence. Avoid simply listing the inputs; create a unified final answer.
 
 ORIGINAL QUERY:
-{{query}}
+{{ query }}
 
 INPUTS TO FUSE:
-{{fusion_input}}
+{{ fusion_input }}
 
 Based on the query and the provided inputs, generate a comprehensive and well-structured final response:"""
 

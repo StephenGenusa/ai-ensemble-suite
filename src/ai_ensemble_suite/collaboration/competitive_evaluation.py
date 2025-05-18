@@ -1,3 +1,4 @@
+# ai_ensemble_suite/collaboration/competitive_evaluation.py
 
 """Competitive Evaluation collaboration phase implementation."""
 

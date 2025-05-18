@@ -1,3 +1,4 @@
+# ai_ensemble_suite/collaboration/role_based_workflow.py
 
 """Role-Based Workflow collaboration phase implementation."""
 

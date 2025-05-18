@@ -1,4 +1,4 @@
-# src/ai_ensemble_suite/ensemble.py
+# ai_ensemble_suite/ensemble.py
 
 """Main Ensemble class for ai-ensemble-suite."""
 

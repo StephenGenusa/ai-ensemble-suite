@@ -1,3 +1,5 @@
+# ai_ensemble_suite/aggregation/base.py
+
 """Base class for aggregation strategies."""
 
 from abc import ABC, abstractmethod

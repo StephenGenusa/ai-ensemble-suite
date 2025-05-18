@@ -1,3 +1,4 @@
+# ai_ensemble_suite/collaboration/async_thinking.py
 
 """Asynchronous Thinking collaboration phase implementation."""
 

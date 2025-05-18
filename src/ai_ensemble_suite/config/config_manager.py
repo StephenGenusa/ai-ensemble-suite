@@ -1,4 +1,4 @@
-# src/ai_ensemble_suite/config/config_manager.py
+# ai_ensemble_suite/config/config_manager.py
 
 """Configuration management for ai-ensemble-suite."""
 

@@ -1,3 +1,5 @@
+# ai_ensemble_suite/collaboration/bagging.py
+
 """Bagging collaboration phase implementation."""
 
 from typing import Dict, Any, Optional, List, Set

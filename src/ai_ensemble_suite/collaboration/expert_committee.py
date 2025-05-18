@@ -1,3 +1,4 @@
+# ai_ensemble_suite/collaboration/expert_committee.py
 
 """Expert Committee collaboration phase implementation."""
 

@@ -1,4 +1,4 @@
-# src/ai_ensemble_suite/collaboration/base.py
+# ai_ensemble_suite/collaboration/base.py
 
 """Base class for collaboration phases."""
 

@@ -1,4 +1,4 @@
-# src/ai_ensemble_suite/utils/template_engine.py
+# ai_ensemble_suite/utils/template_engine.py
 
 """Template engine module for rendering templates with Jinja2."""
 

@@ -1,3 +1,4 @@
+# ai_ensemble_suite/collaboration/structured_debate/synthesis.py
 
 """Synthesis-oriented debate pattern implementation."""
 

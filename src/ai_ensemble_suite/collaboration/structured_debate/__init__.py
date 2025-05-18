@@ -1,3 +1,4 @@
+# ai_ensemble_suite/collaboration/structured_debate/__init__.py
 
 """Structured debate collaboration patterns."""
 

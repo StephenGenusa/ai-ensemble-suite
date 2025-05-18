@@ -1,3 +1,4 @@
+# ai_ensemble_suite/collaboration/adversarial_improvement.py
 
 """Adversarial Improvement collaboration phase implementation."""
 

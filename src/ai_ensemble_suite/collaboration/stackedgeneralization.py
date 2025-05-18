@@ -1,3 +1,5 @@
+# ai_ensemble_suite/collaboration/stackedgeneralization.py
+
 """Stacked Generalization collaboration phase implementation."""
 
 from typing import Dict, Any, Optional, List

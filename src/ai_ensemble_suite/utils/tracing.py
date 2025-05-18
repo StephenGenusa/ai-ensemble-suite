@@ -1,4 +1,4 @@
-# src/ai_ensemble_suite/utils/tracing.py
+# ai_ensemble_suite/utils/tracing.py
 
 """Tracing utilities for collecting and organizing execution information."""
 

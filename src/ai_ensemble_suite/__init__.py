@@ -1,3 +1,4 @@
+# ai_ensemble_suite/__init__.py
 
 """
 ai-ensemble-suite: A Python framework for multiple GGUF language models collaboration.

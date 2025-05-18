@@ -1,4 +1,4 @@
-# src/ai_ensemble_suite/config/defaults.py
+# ai_ensemble_suite/config/defaults.py
 
 """Default configuration values for ai-ensemble-suite."""
 

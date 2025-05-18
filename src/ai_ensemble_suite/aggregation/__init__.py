@@ -1,3 +1,4 @@
+# ai_ensemble_suite/aggregation/__init__.py
 
 """Aggregation strategies for ai-ensemble-suite."""
 

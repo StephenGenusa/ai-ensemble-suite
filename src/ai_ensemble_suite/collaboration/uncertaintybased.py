@@ -1,3 +1,5 @@
+# ai_ensemble_suite/collaboration/uncertaintybased.py
+
 """Uncertainty-Based Collaboration phase implementation."""
 
 from typing import Dict, Any, List, Optional, Set

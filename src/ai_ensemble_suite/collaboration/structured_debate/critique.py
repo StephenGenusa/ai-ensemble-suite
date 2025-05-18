@@ -1,3 +1,4 @@
+# ai_ensemble_suite/collaboration/structured_debate/critique.py
 
 """Structured critique debate pattern implementation."""
 
